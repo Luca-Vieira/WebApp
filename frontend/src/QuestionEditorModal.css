@@ -1,0 +1,138 @@
+/* src/QuestionEditorModal.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; /* Acima da sidebar e outros elementos */
+}
+
+.modal-content {
+  background-color: var(--cor-fundo-elementos, #fff);
+  padding: 25px 30px;
+  border-radius: var(--border-radius-padrao, 8px);
+  box-shadow: var(--sombra-media, 0 5px 15px rgba(0,0,0,0.2));
+  width: 90vw;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--cor-texto-principal, #2d3748);
+  font-size: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--cor-texto-secundario, #4a5568);
+  font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+  width: calc(100% - 20px); /* Considera padding */
+  padding: 10px;
+  border: 1px solid var(--cor-borda, #cbd5e0);
+  border-radius: var(--border-radius-padrao, 8px);
+  font-size: 0.95rem;
+  background-color: #fff; /* Garante fundo branco para inputs */
+  color: var(--cor-texto-principal); /* Garante cor de texto visível */
+}
+.form-group textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+
+.form-group input[type="radio"] {
+    margin-right: 5px;
+}
+.form-group label input[type="radio"] { /* Para alinhar melhor */
+    vertical-align: middle;
+}
+ .form-group label:not(:last-child) input[type="radio"]{
+    margin-right: 15px;
+}
+
+
+.option-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.option-input-group input[type="text"] {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.remove-option-btn, .add-option-btn {
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-padrao, 8px);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.remove-option-btn {
+  background-color: transparent;
+  color: var(--cor-alerta, #e53e3e);
+  font-size: 1.2rem; /* Para o 'X' ficar maior */
+  padding: 5px 10px;
+}
+.remove-option-btn:hover {
+  background-color: var(--cor-alerta, #e53e3e);
+  color: #fff;
+}
+
+.add-option-btn {
+  background-color: #e9ecef; /* Um cinza claro */
+  color: var(--cor-texto-secundario);
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+.add-option-btn:hover {
+  background-color: #ced4da;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cor-borda, #cbd5e0);
+}
+
+.modal-actions .save-btn {
+  background: linear-gradient(to right, var(--cor-primaria-fim, #3b82f6), var(--cor-primaria-inicio, #2c5282));
+  color: var(--cor-texto-sobre-primaria, #fff);
+}
+.modal-actions .save-btn:hover {
+    opacity: 0.9;
+}
+
+.modal-actions .cancel-btn {
+  background-color: var(--cor-fundo-sidebar, #eBF3FB);
+  color: var(--cor-texto-secundario);
+  border: 1px solid var(--cor-borda);
+}
+ .modal-actions .cancel-btn:hover {
+    background-color: #d8e2eb;
+}

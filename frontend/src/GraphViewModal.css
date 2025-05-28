@@ -1,0 +1,51 @@
+/* src/GraphViewModal.css */
+.graph-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Alto z-index para ficar na frente */
+}
+
+.graph-modal-content {
+  background-color: var(--cor-fundo-elementos, #fff);
+  padding: 25px;
+  border-radius: var(--border-radius-padrao, 8px);
+  box-shadow: var(--sombra-media, 0 4px 12px rgba(0,0,0,0.1));
+  width: 85vw;
+  height: 80vh;
+  max-width: 1200px; /* Limite máximo de largura */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph-modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--cor-texto-principal, #2d3748);
+}
+
+.graph-modal-close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--cor-texto-terciario, #718096);
+  cursor: pointer;
+  line-height: 1;
+}
+.graph-modal-close-button:hover {
+    color: var(--cor-texto-principal, #2d3748);
+}
+
+/* Estilos do React Flow já são importados no JS,
+   mas você pode adicionar estilos específicos para os nós/arestas aqui se necessário,
+   ou diretamente no style dos elementos no JS. */
