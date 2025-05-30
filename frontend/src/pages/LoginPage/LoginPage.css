@@ -1,0 +1,24 @@
+/* frontend/src/pages/LoginPage/LoginPage.css */
+.login-page-container {
+  /* Estilos específicos para o container da página de login, se necessário */
+  /* Exemplo:
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  */
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaçamento entre os grupos de formulário e o botão */
+}
+
+.form-switch-link {
+  margin-top: 20px;
+  font-size: 0.9em;
+}

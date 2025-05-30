@@ -1,0 +1,11 @@
+/* frontend/src/pages/RegisterPage/RegisterPage.css */
+.register-page-container {
+  /* Estilos específicos para o container da página de cadastro, se necessário */
+}
+
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaçamento entre os grupos de formulário e o botão */
+}
