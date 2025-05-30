@@ -1,24 +1,99 @@
-/* frontend/src/pages/LoginPage/LoginPage.css */
+/* Herda estilos de .form-container de um CSS global (ex: App.css ou index.css) */
+/* .form-container já deve definir max-width, padding básico, background, border-radius, box-shadow */
+
 .login-page-container {
-  /* Estilos específicos para o container da página de login, se necessário */
-  /* Exemplo:
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  */
+  /* Adiciona um toque visual específico para a página de login */
+  border-top: 5px solid var(--primary-color); /* Uma borda superior colorida */
+  padding-top: 40px; /* Mais espaço no topo dentro do container */
+  padding-bottom: 40px;
+}
+
+.login-page-container h2 {
+  color: var(--text-color);
+  font-size: 2em; /* Título um pouco maior */
+  font-weight: 600;
+  margin-bottom: 30px; /* Mais espaço abaixo do título */
 }
 
 .login-form {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Espaçamento entre os grupos de formulário e o botão */
+  gap: 20px; /* Espaçamento entre os grupos de formulário e o botão */
 }
 
-.form-switch-link {
-  margin-top: 20px;
+/* Estilos para .form-group, label, input, .form-button, .form-link 
+   devem vir de um CSS global para consistência.
+   Se não vierem, você pode adicioná-los aqui ou (melhor) em App.css: */
+
+/* Exemplo (se não estiverem definidos globalmente): */
+
+.form-group {
+  width: 100%;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--label-color);
+  font-size: 0.95em;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-md);
+  box-sizing: border-box;
+  font-size: 1em;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-group input:focus {
+  border-color: var(--input-focus-border-color);
+  outline: none;
+  box-shadow: var(--input-focus-box-shadow);
+}
+
+.form-button {
+  padding: 12px 25px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%; 
+  margin-top: 10px; 
+}
+
+.form-button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.form-switch-link { 
+  margin-top: 25px;
   font-size: 0.9em;
+  color: var(--label-color);
+}
+
+.form-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-link:hover {
+  text-decoration: underline;
+  color: var(--primary-color-hover);
+}
+
+
+/* Estilo adicional para o link de cadastro, se necessário */
+.login-page-container .form-switch-link {
+  margin-top: 25px;
 }

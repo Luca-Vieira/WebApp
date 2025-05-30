@@ -1,26 +1,37 @@
 // frontend/src/pages/LoginPage/LoginPage.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // useNavigate para redirecionar após login
-import './LoginPage.css'; // Estilos específicos para a página de login
-// Importe os estilos globais do formulário de App.css se eles estiverem lá
-// ou adicione classes de .form-container, .form-group, etc. aqui ou no LoginPage.css
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Adicionado useLocation
+import { useAuth } from '../../context/AuthContext'; // <-- IMPORTAR useAuth
+import './LoginPage.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // Hook para navegação programática
+  const { login } = useAuth(); // <-- USAR o hook useAuth
+  const navigate = useNavigate();
+  const location = useLocation(); // Para redirecionar após login
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => { // Tornada async se o login real for assíncrono
     event.preventDefault();
+    
     // Lógica de autenticação (simulada por enquanto)
-    console.log('Dados de Login:', { email, password });
-    alert('Login (simulado) com sucesso! Verifique o console.');
-    // No futuro, após autenticação real:
-    // navigate('/'); // Redireciona para a página principal
+    console.log('Dados de Login para simulação:', { email, password });
+
+    // Simulação de dados do usuário que viriam da API
+    const fakeUserData = { email: email, name: email.split('@')[0] }; // Exemplo
+    
+    // Chama a função de login do AuthContext
+    login(fakeUserData); // Passa dados para simulação
+
+    // A navegação para '/hub' já é feita dentro da função login() do AuthContext.
+    // Se você quiser redirecionar para a página que o usuário tentou acessar antes:
+    // const from = location.state?.from?.pathname || "/hub";
+    // navigate(from, { replace: true });
+    // Mas por simplicidade, o login() do AuthContext já redireciona para /hub.
   };
 
   return (
-    <div className="login-page-container form-container"> {/* Usando classes de App.css */}
+    <div className="login-page-container form-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit} className="login-form">
         <div className="form-group">

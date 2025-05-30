@@ -392,9 +392,14 @@ function MainPage() {
         body: JSON.stringify(storyData),
       });
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: `Erro HTTP: ${response.status} - ${response.statusText}` }));
+        // Tenta pegar o JSON do erro, se não conseguir, usa o statusText
+        const errorData = await response.json().catch(() => ({ 
+            detail: `Erro HTTP: ${response.status} - ${response.statusText || 'Erro desconhecido no servidor'}` 
+        }));
         console.error('Erro ao salvar história no backend:', response.status, errorData);
-        alert(`Erro ao salvar história: ${errorData.message}`);
+        
+        // CORREÇÃO AQUI: Use errorData.detail em vez de errorData.message
+        alert(`Erro ao salvar história: ${errorData.detail || 'Não foi possível obter detalhes do erro.'}`); 
         return;
       }
       const savedStoryResponse = await response.json();

@@ -1,0 +1,148 @@
+/* frontend/src/pages/StoryPlayerPage/StoryPlayerPage.css */
+
+.story-player-container {
+  max-width: 800px;
+  margin: 2rem auto; /* Centraliza o container na página e adiciona margem no topo/baixo */
+  padding: 2rem;
+  background-color: var(--container-background-color, #fff);
+  border-radius: var(--border-radius-lg, 8px);
+  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.1));
+  color: var(--text-color, #212529);
+  animation: fadeInPage 0.6s ease-out;
+}
+
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.story-player-loading {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 3rem;
+  color: var(--label-color, #555);
+}
+
+.story-player-header {
+  border-bottom: 1px solid var(--container-border-color, #eee);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.story-player-header h1 {
+  font-size: 2rem;
+  color: var(--current-page-accent-color, var(--primary-color, #007bff)); /* Usa a cor da página */
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.story-player-header p {
+  font-size: 0.9rem;
+  color: var(--text-color-light, #6c757d);
+  margin-top: 0;
+}
+
+.story-player-content {
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.story-player-content p {
+  margin-bottom: 1em;
+}
+
+.story-player-content a.internal-player-link {
+  /* Estilo já definido inline no JSX, mas pode adicionar mais aqui se necessário */
+  cursor: pointer;
+}
+
+.story-player-content a:not(.internal-player-link) { /* Links Markdown externos */
+  color: var(--current-page-accent-color, var(--primary-color, #007bff));
+}
+.story-player-content a:not(.internal-player-link):hover {
+  filter: brightness(85%);
+}
+
+.story-questions-area {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--container-border-color, #ddd);
+}
+
+.story-questions-area h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-color, #333);
+}
+
+.story-question-item {
+  background-color: var(--background-color, #f8f9fa); /* Fundo levemente diferente para cada questão */
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius-md, 6px);
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--container-border-color, #eee);
+}
+
+.story-question-item h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color, #333);
+}
+
+.story-options-list {
+  list-style: none;
+  padding: 0;
+}
+
+.story-options-list li {
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.story-options-list input[type="radio"],
+.story-options-list input[type="checkbox"] {
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  /* Estilos customizados para inputs de rádio/checkbox podem ser adicionados aqui para melhor visual */
+  /* Exemplo simples: */
+  transform: scale(1.1);
+  accent-color: var(--current-page-accent-color, var(--primary-color));
+}
+
+.story-options-list label {
+  font-size: 0.95rem;
+  color: var(--label-color, #555);
+  cursor: pointer;
+}
+
+.story-player-navigation {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--container-border-color, #eee);
+  text-align: center; /* Centraliza o botão de finalizar */
+}
+
+.story-finish-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background-color: var(--success-color, #28a745);
+  color: var(--text-on-primary-color, #fff);
+  border: none;
+  border-radius: var(--border-radius-md, 6px);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.story-finish-button:hover {
+  background-color: #1e7e34; /* Tom mais escuro do verde */
+}
+
+.story-player-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+}

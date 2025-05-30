@@ -1,127 +1,189 @@
-/* src/App.css */
-:root {
-  --cor-primaria-inicio: #2c5282;
-  --cor-primaria-fim: #3b82f6;
-  --cor-primaria-solida: #2d65c4;
-  --cor-primaria-hover: #2556aa;
-  --cor-fundo-app: #f0f2f5;
-  --cor-fundo-elementos: #ffffff;
-  --cor-fundo-sidebar: #eBF3FB;
-  --cor-fundo-editor: #f8f9fa;
-  --cor-texto-principal: #2d3748;
-  --cor-texto-secundario: #4a5568;
-  --cor-texto-terciario: #718096;
-  --cor-texto-sobre-primaria: #ffffff;
-  --cor-borda: #cbd5e0;
-  --cor-borda-foco: var(--cor-primaria-solida);
-  --cor-alerta: #ef4444; 
-  --cor-alerta-hover: #dc2626;
-  --sombra-sutil: 0 2px 4px rgba(0,0,0,0.05);
-  --sombra-media: 0 4px 12px rgba(0,0,0,0.1);
-  --border-radius-padrao: 8px;
-  --transition-speed: 0.2s;
-  color-scheme: light;
+/* src/App.css - Para o componente App.jsx que gerencia as rotas */
+
+/* Estilos para um possível container raiz no App.jsx das rotas */
+/* .app-router-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+} */
+
+.app-nav {
+  background-color: var(--container-background-color);
+  padding: 0.75rem 1.5rem;
+  box-shadow: var(--box-shadow-sm);
+  margin-bottom: 2rem; /* Espaço entre a navegação e o conteúdo da página */
+  border-bottom: 1px solid var(--container-border-color);
 }
 
-body {
+.app-nav ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: var(--cor-fundo-app);
-  color: var(--cor-texto-principal);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
-.app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
-
-.sidebar { width: 260px; background: linear-gradient(180deg, var(--cor-fundo-sidebar) 0%, #f3f6f9 100%); padding: 24px; border-right: 1px solid var(--cor-borda); display: flex; flex-direction: column; box-shadow: var(--sombra-sutil); flex-shrink: 0; }
-.sidebar h2 { margin-top: 0; margin-bottom: 24px; color: var(--cor-primaria-inicio); font-size: 1.4rem; font-weight: 700; }
-
-.sidebar .sidebar-action-button { border: none; padding: 11px 18px; border-radius: var(--border-radius-padrao); cursor: pointer; font-size: 0.9rem; font-weight: 500; margin-bottom: 12px; width: 100%; transition: opacity var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease; box-shadow: var(--sombra-sutil); text-align: center; line-height: 1.4; }
-.sidebar .sidebar-action-button:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-.sidebar .sidebar-action-button:disabled:hover { opacity: 0.6; }
-.sidebar .sidebar-action-button:hover:not(:disabled) { opacity: 0.9; box-shadow: var(--sombra-media); }
-
-.sidebar .toggle-mode-button { background-color: #6c757d; color: white; }
-.sidebar .toggle-mode-button:hover:not(:disabled) { background-color: #5a6268; }
-
-.sidebar .new-page-button { background: linear-gradient(to right, var(--cor-primaria-fim), var(--cor-primaria-inicio)); color: var(--cor-texto-sobre-primaria); }
-.sidebar .graph-view-button { background-color: var(--cor-fundo-elementos); color: var(--cor-primaria-solida); border: 1px solid var(--cor-borda); }
-.sidebar .graph-view-button:hover:not(:disabled) { background-color: var(--cor-primaria-solida); color: var(--cor-texto-sobre-primaria); border-color: var(--cor-primaria-solida); }
-.sidebar .reset-history-button { background-color: var(--cor-alerta); color: var(--cor-texto-sobre-primaria); margin-bottom: 20px; }
-.sidebar .reset-history-button:hover:not(:disabled) { background-color: var(--cor-alerta-hover); }
-
-.sidebar ul { list-style-type: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
-.sidebar li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-radius: var(--border-radius-padrao); transition: background-color var(--transition-speed) ease; }
-.sidebar li .page-title-sidebar { flex-grow: 1; padding: 10px 14px; cursor: pointer; color: var(--cor-texto-secundario); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem; font-weight: 500; transition: color var(--transition-speed) ease; border-radius: var(--border-radius-padrao) 0 0 var(--border-radius-padrao); }
-.sidebar li:not(.active):hover { background-color: rgba(0,0,0,0.03); }
-.sidebar li:not(.active):hover .page-title-sidebar { color: var(--cor-primaria-solida); }
-.sidebar li.active { background: var(--cor-primaria-solida); box-shadow: inset 3px 0 0 var(--cor-primaria-fim); }
-.sidebar li.active .page-title-sidebar { color: var(--cor-texto-sobre-primaria); font-weight: 600; }
-.sidebar .delete-page-button { background-color: transparent; color: var(--cor-texto-terciario); border: none; padding: 8px 12px; border-radius: 0 var(--border-radius-padrao) var(--border-radius-padrao) 0; cursor: pointer; font-weight: bold; font-size: 0.8rem; line-height: 1; flex-shrink: 0; transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease; }
-.sidebar li.active .delete-page-button { color: rgba(255,255,255,0.7); }
-.sidebar li.active .delete-page-button:hover { color: var(--cor-texto-sobre-primaria); background-color: rgba(0,0,0,0.1); }
-.sidebar li:not(.active) .delete-page-button:hover { color: var(--cor-alerta); }
-
-.main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; height: 100vh; background-color: var(--cor-fundo-elementos); }
-.editor-area { padding: 24px; border-bottom: 1px solid var(--cor-borda); background-color: var(--cor-fundo-editor); display: flex; flex-direction: column; gap: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); z-index: 5; overflow: auto; resize: vertical; min-height: 200px; height: 45vh; flex-shrink: 0; }
-.title-input { font-size: 1.8rem; font-weight: 700; padding: 12px 0px; border: none; border-bottom: 2px solid transparent; color: var(--cor-texto-principal); background-color: transparent; caret-color: var(--cor-primaria-solida); transition: border-color var(--transition-speed) ease; width: 100%; box-sizing: border-box; }
-.title-input:focus { outline: none; border-bottom-color: var(--cor-borda-foco); }
-.markdown-input { width: 100%; min-height: 150px; flex-grow: 1; border: 1px solid var(--cor-borda); border-radius: var(--border-radius-padrao); padding: 16px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 0.95rem; line-height: 1.7; resize: vertical; color: var(--cor-texto-principal); background-color: var(--cor-fundo-elementos); caret-color: var(--cor-primaria-solida); transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; box-sizing: border-box; }
-.markdown-input:focus { outline: none; border-color: var(--cor-borda-foco); box-shadow: 0 0 0 3px rgba(45, 101, 196, 0.2); }
-.process-button { padding: 12px 28px; background: linear-gradient(to right, var(--cor-primaria-fim), var(--cor-primaria-inicio)); color: var(--cor-texto-sobre-primaria); border: none; border-radius: var(--border-radius-padrao); cursor: pointer; font-size: 1rem; font-weight: 600; align-self: flex-start; transition: opacity var(--transition-speed) ease, box-shadow var(--transition-speed) ease; box-shadow: var(--sombra-sutil); }
-.process-button:hover { opacity: 0.9; box-shadow: var(--sombra-media); }
-.process-button:disabled { opacity: 0.6; cursor: not-allowed; background: var(--cor-texto-terciario); box-shadow: none; }
-.color-picker-container { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-.color-picker-container label { font-size: 0.9rem; color: var(--cor-texto-secundario); font-weight: 500; }
-input[type="color"] { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 36px; height: 36px; background-color: transparent; border: 1px solid var(--cor-borda); border-radius: var(--border-radius-padrao); cursor: pointer; padding: 0; }
-input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; border-radius: var(--border-radius-padrao); }
-input[type="color"]::-webkit-color-swatch { border: none; border-radius: calc(var(--border-radius-padrao) - 3px); }
-input[type="color"]::-moz-color-swatch { border: none; border-radius: calc(var(--border-radius-padrao) - 3px); padding: 3px; }
-
-#page-content-display.page-display-wrapper { flex-grow: 1; padding: 24px 32px; overflow-y: auto; background-color: var(--cor-fundo-elementos); }
-.page-display-wrapper.full-height-display { /* Aplicada quando !isEditMode && currentPageObject */
-    /* Se .editor-area não é renderizada, .page-display-wrapper com flex-grow:1 já ocupa o espaço.
-       Esta classe pode ser usada para ajustes finos se editor-area fosse display:none. */
+.app-nav a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  padding: 0.5rem 0;
 }
-.page-display-title { color: var(--page-accent-color, var(--cor-texto-principal)); font-size: 2.2rem; font-weight: 700; margin-bottom: 1em; border-bottom: 1px solid var(--cor-borda); padding-bottom: 0.5em; }
-.page-display h1, .page-display h2, .page-display h3, .page-display h4, .page-display h5, .page-display h6 { color: var(--cor-texto-principal); margin-top: 1.8em; margin-bottom: 1em; line-height: 1.4; font-weight: 600; }
-.page-display h1 { font-size: 1.8rem; } .page-display h2 { font-size: 1.6rem; } .page-display h3 { font-size: 1.4rem; }
-.page-display p { line-height: 1.8; margin-bottom: 1.5em; color: var(--cor-texto-secundario); max-width: 75ch; }
-.page-display a { color: var(--page-accent-color-link, var(--cor-primaria-solida)); text-decoration: none; font-weight: 500; transition: color var(--transition-speed) ease; }
-.page-display a:hover { color: var(--page-accent-color-link-hover, var(--cor-primaria-hover)); text-decoration: underline; }
-.page-display blockquote { border-left: 4px solid var(--page-accent-color, var(--cor-primaria-solida)); margin-left: 0; padding-left: 1.5em; color: var(--cor-texto-terciario); font-style: italic; }
-.page-display ul:not(.questions-list), .page-display ol { padding-left: 2em; margin-bottom: 1.5em; max-width: 75ch; } /* Evita conflito com lista de questões */
-.page-display code { background-color: var(--cor-fundo-sidebar); padding: 0.2em 0.5em; margin: 0 0.1em; font-size: 88%; border-radius: 4px; color: var(--cor-texto-secundario); font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; }
-.page-display pre { background-color: #2d3748; color: #e2e8f0; border: 1px solid #4a5568; border-radius: var(--border-radius-padrao); padding: 1em 1.5em; overflow-x: auto; box-shadow: var(--sombra-sutil); }
-.page-display pre code { background-color: transparent; padding: 0; margin: 0; font-size: 0.9rem; color: inherit; }
-.page-display-wrapper[style*="--page-accent-color"] .page-display-title { color: var(--page-accent-color); }
-.page-display-wrapper[style*="--page-accent-color"] blockquote { border-left-color: var(--page-accent-color); }
-.page-display-wrapper[style*="--page-accent-color"] a:not(.internal-link) { color: var(--page-accent-color); }
-.page-display-wrapper[style*="--page-accent-color"] a:not(.internal-link):hover { filter: brightness(0.8); }
 
-.page-questions-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--cor-borda); }
-.page-questions-section h3 { margin-top: 0; margin-bottom: 15px; color: var(--cor-texto-principal); font-size: 1.2rem; }
-.questions-list { list-style: none; padding: 0; margin-bottom: 15px; }
-.question-item { background-color: var(--cor-fundo-elementos); padding: 10px 15px; border-radius: var(--border-radius-padrao); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--cor-borda); }
-.question-item span { color: var(--cor-texto-secundario); font-size: 0.9rem; flex-grow: 1; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
-.question-item div { display: flex; gap: 8px; flex-shrink: 0;}
-.question-item div button { padding: 6px 10px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; }
-.edit-question-btn { background-color: var(--cor-fundo-sidebar); color: var(--cor-texto-secundario); border: 1px solid var(--cor-borda); }
-.edit-question-btn:hover { background-color: #d1dfee; }
-.delete-question-btn { background-color: transparent; color: var(--cor-alerta); border: 1px solid transparent; }
-.delete-question-btn:hover { background-color: var(--cor-alerta); color: white; border-color: var(--cor-alerta); }
-.add-question-button { background: var(--cor-primaria-solida); color: var(--cor-texto-sobre-primaria); border: none; padding: 10px 15px; border-radius: var(--border-radius-padrao); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: background-color 0.2s; margin-top: 10px; }
-.add-question-button:hover { background-color: var(--cor-primaria-hover); }
+.app-nav a:hover,
+.app-nav a.active { /* Para NavLink do react-router-dom */
+  color: var(--primary-color-hover);
+  border-bottom: 2px solid var(--primary-color-hover);
+}
 
-.questions-display-area { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--cor-borda); }
-.questions-display-area h2 { font-size: 1.5rem; color: var(--cor-texto-principal); margin-bottom: 20px; }
-.question-display-item { background-color: var(--cor-fundo-elementos); padding: 20px; border-radius: var(--border-radius-padrao); margin-bottom: 20px; border: 1px solid var(--cor-borda); box-shadow: var(--sombra-sutil); }
-.question-display-item h4 { margin-top: 0; margin-bottom: 15px; font-size: 1.1rem; color: var(--cor-texto-principal); font-weight: 600; }
-.question-display-item ul { list-style: none; padding: 0; }
-.question-display-item ul li { margin-bottom: 10px; font-size: 0.95rem; color: var(--cor-texto-secundario); display: flex; align-items: center; }
-.question-display-item input[type="radio"],
-.question-display-item input[type="checkbox"] { margin-right: 10px; vertical-align: middle; height: 1.1em; width: 1.1em; flex-shrink: 0; }
-.question-display-item label { cursor: pointer; line-height: 1.2; }
+/* Container principal para o conteúdo de cada página de rota */
+.app-content {
+  flex-grow: 1; /* Garante que o conteúdo ocupe o espaço vertical disponível */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* Centraliza horizontalmente o LoginPage */
+  justify-content: center; /* Centraliza verticalmente o LoginPage */
+  width: 100%;
+  box-sizing: border-box;
+}
 
+/* ========================================= */
+/* ESTILOS GLOBAIS DE FORMULÁRIO MODERNOS    */
+/* ========================================= */
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Itens do formulário (form-group) ocupam a largura */
+  padding: 2.5rem; /* Padding generoso */
+  border: 1px solid var(--container-border-color);
+  border-radius: var(--border-radius-lg, 0.5rem); /* Bordas mais arredondadas */
+  background-color: var(--container-background-color);
+  color: var(--text-color);
+  max-width: 480px; /* Largura máxima para o formulário */
+  width: calc(100% - 40px); /* Considera o padding de .app-content */
+  box-shadow: var(--box-shadow-md);
+  /* margin-top: 0; /* Removido pois .app-content já centraliza */
+}
+
+.form-container h2 {
+  margin-top: 0;
+  margin-bottom: 2rem; /* Mais espaço abaixo do H2 */
+  color: var(--text-color);
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1.25rem; /* Espaçamento entre os grupos */
+  width: 100%;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--label-color);
+  font-size: 0.9rem;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="text"] { /* Aplica a todos os tipos de input de texto */
+  width: 100%;
+  padding: 0.75rem 1rem; /* Padding interno dos inputs */
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-md);
+  box-sizing: border-box;
+  font-size: 1rem;
+  background-color: var(--container-background-color); /* GARANTE FUNDO BRANCO */
+  color: var(--text-color);                         /* GARANTE TEXTO ESCURO */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="text"]:focus {
+  border-color: var(--input-focus-border-color);
+  outline: 0;
+  box-shadow: var(--input-focus-box-shadow);
+}
+
+/* Garante que o autopreenchimento do navegador não force um tema escuro */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover, 
+.form-group input:-webkit-autofill:focus, 
+.form-group input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s; /* Adiciona transição para suavizar */
+  -webkit-box-shadow: 0 0 0 30px var(--container-background-color, white) inset !important;
+  -webkit-text-fill-color: var(--text-color, #212529) !important;
+}
+
+.form-button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--text-on-primary-color);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5; /* Melhor alinhamento vertical do texto */
+  text-align: center;
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  width: 100%; 
+  margin-top: 0.5rem; /* Ajuste de espaço acima do botão */
+  box-shadow: var(--box-shadow-sm);
+}
+
+.form-button:hover:not(:disabled) {
+  background-color: var(--primary-color-hover);
+  box-shadow: var(--box-shadow-md);
+}
+.form-button:disabled {
+  background-color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.form-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.form-switch-link { 
+  margin-top: 1.5rem; /* Mais espaço */
+  font-size: 0.9rem;
+  color: var(--text-color-light);
+  text-align: center;
+}
+
+.form-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.form-link:hover {
+  text-decoration: underline;
+  color: var(--primary-color-hover);
+}
+
+/* Em src/App.css (o que é importado pelo App.jsx de rotas) */
+.nav-logout-button {
+  background-color: transparent;
+  color: var(--primary-color, #007bff);
+  border: none;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  font-size: 1em; /* Ou o tamanho da fonte dos seus links de navegação */
+  font-weight: 500;
+  cursor: pointer;
+}
+.nav-logout-button:hover {
+  color: var(--primary-color-hover, #0056b3);
+  text-decoration: underline;
+}
