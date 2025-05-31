@@ -1,138 +1,103 @@
 /* frontend/src/pages/HubPage/HubPage.css */
 
-.hub-page-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Tenta centralizar o conteúdo principal verticalmente */
-  min-height: calc(100vh - 120px); /* Ajuste conforme a altura da sua navegação e padding de .app-content */
-  padding: 2rem;
-  text-align: center;
-  animation: fadeInPage 0.5s ease-out; /* Reutilizando animação global, se definida */
-}
+/* ... (seus estilos existentes para .hub-page-container, .hub-header, etc.) ... */
 
-.hub-header {
-  margin-bottom: 3rem;
-}
-
-.hub-header h1 {
-  font-size: 2.5rem;
-  color: var(--primary-color, #007bff);
-  margin-bottom: 0.5rem;
-}
-
-.hub-header p {
-  font-size: 1.1rem;
-  color: var(--text-color-light, #6c757d);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hub-options-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* Uma coluna em telas pequenas */
-  gap: 2rem;
-  width: 100%;
-  max-width: 900px; /* Largura máxima para as opções */
-}
-
-@media (min-width: 768px) {
-  .hub-options-grid {
-    grid-template-columns: 1fr 1fr; /* Duas colunas em telas maiores */
-  }
-}
-
-.hub-option-card {
-  background-color: var(--container-background-color, #fff);
-  padding: 2rem;
-  border-radius: var(--border-radius-lg, 8px);
-  box-shadow: var(--box-shadow-md, 0 4px 12px rgba(0,0,0,0.1));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between; /* Distribui o espaço */
-  min-height: 220px; /* Altura mínima para os cards */
-}
-
-.hub-option-card h2 {
-  font-size: 1.5rem;
-  color: var(--text-color, #333);
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-.hub-option-card p {
-  font-size: 0.95rem;
-  color: var(--label-color, #555);
-  flex-grow: 1; /* Faz o parágrafo ocupar espaço */
-  margin-bottom: 1.5rem;
-}
-
-.hub-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: var(--border-radius-md, 6px);
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  width: 100%; /* Botões ocupam a largura do card */
-  max-width: 280px; /* Mas não ficam excessivamente largos */
-  border: none;
-}
-.hub-button:active:not(:disabled) {
-  transform: translateY(1px);
-}
-.hub-button:disabled {
-  background-color: #adb5bd;
-  cursor: not-allowed;
-}
-
-.hub-button.primary-button {
-  background-color: var(--primary-color, #007bff);
-  color: var(--text-on-primary-color, white);
-}
-.hub-button.primary-button:hover:not(:disabled) {
-  background-color: var(--primary-color-hover, #0056b3);
-}
-
-.hub-button.secondary-button {
-  background-color: var(--success-color, #28a745); /* Ou outra cor secundária */
-  color: var(--text-on-primary-color, white);
-}
-.hub-button.secondary-button:hover:not(:disabled) {
-  background-color: #218838;
-}
-
-.execute-story-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  align-items: center; /* Centraliza o input e o botão dentro do formulário */
-}
-
-.hub-input {
-  width: 100%;
-  max-width: 280px;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--input-border-color, #ced4da);
-  border-radius: var(--border-radius-md, 6px);
-  box-sizing: border-box;
-  font-size: 1rem;
-  text-align: center;
-}
-.hub-input:focus {
-  border-color: var(--input-focus-border-color, #80bdff);
-  outline: 0;
-  box-shadow: var(--input-focus-box-shadow, 0 0 0 0.2rem rgba(0, 123, 255, 0.25));
-}
-
-.hub-footer {
+.user-stories-section {
   margin-top: 3rem;
-  font-size: 0.9rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--container-border-color, #eee);
+  width: 100%;
+  max-width: 900px; /* Mesma largura que hub-options-grid para consistência */
+}
+
+.user-stories-section h2 {
+  font-size: 1.8rem;
+  color: var(--text-color, #333);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.loading-message,
+.error-message,
+.no-stories-message {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1rem;
+  color: var(--label-color, #555);
+}
+.error-message {
+  color: var(--danger-color, red);
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--container-border-color, #eee);
+  border-radius: var(--border-radius-md);
+}
+
+.stories-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.story-list-item {
+  background-color: var(--container-background-color, #fff);
+  border: 1px solid var(--container-border-color, #e9ecef);
+  border-radius: var(--border-radius-md, 6px);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--box-shadow-sm, 0 2px 4px rgba(0,0,0,0.05));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem; /* Espaço entre info e actions */
+}
+
+.story-list-item:hover {
+  border-color: var(--primary-color-focus-shadow);
+  box-shadow: var(--box-shadow-md);
+}
+
+.story-info {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.story-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.2rem;
+  color: var(--primary-color, #007bff);
+}
+
+.story-info p {
+  margin: 0;
+  font-size: 0.85rem;
   color: var(--text-color-light, #6c757d);
 }
-.hub-footer a {
-  margin: 0 0.5rem;
+
+.story-actions {
+  display: flex;
+  gap: 0.75rem; /* Espaço entre os botões de ação */
+  flex-shrink: 0; /* Para não encolher os botões */
+}
+
+.hub-button.list-action-button {
+  padding: 0.5rem 1rem; /* Botões um pouco menores na lista */
+  font-size: 0.9rem;
+  width: auto; /* Largura automática para botões de ação */
+  max-width: none;
+}
+
+.hub-button.list-action-button.edit-button {
+  background-color: var(--warning-color, #ffc107);
+  color: var(--text-color, #212529); /* Texto escuro para fundo amarelo */
+}
+.hub-button.list-action-button.edit-button:hover:not(:disabled) {
+  background-color: #e0a800;
+}
+
+.hub-button.list-action-button.play-button {
+  background-color: var(--success-color, #28a745);
+  color: var(--text-on-primary-color, white);
+}
+.hub-button.list-action-button.play-button:hover:not(:disabled) {
+  background-color: #1e7e34;
 }

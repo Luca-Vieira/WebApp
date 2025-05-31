@@ -1,48 +1,108 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+// frontend/src/pages/StoryPlayerPage/StoryPlayerPage.jsx
+import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Adicionado useMemo
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
-import './StoryPlayerPage.css'; // Criaremos este arquivo de estilo
+import './StoryPlayerPage.css';
 
-const DEFAULT_ACCENT_COLOR = '#3b82f6'; // Mantenha consistente com MainPage
+const DEFAULT_ACCENT_COLOR = '#3b82f6';
+const API_URL = 'http://127.0.0.1:8000'; 
 
 function StoryPlayerPage() {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { storyId } = useParams();
 
-  // Espera-se que storyData (com o array 'pages') e storyTitle sejam passados via estado da rota
-  const { storyData } = location.state || {};
-  
+  const [fetchedStoryData, setFetchedStoryData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [storyPages, setStoryPages] = useState([]);
   const [currentStoryPage, setCurrentStoryPage] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
   const [startTime, setStartTime] = useState(null);
-  const [userName, setUserName] = useState("Jogador Anônimo"); // Placeholder
+  const [userName, setUserName] = useState("Jogador Anônimo");
+  const [visitedPageOrder, setVisitedPageOrder] = useState([]);
 
-  // Inicialização da história e do tempo
   useEffect(() => {
-    if (storyData && storyData.pages && storyData.pages.length > 0) {
-      setStoryPages(storyData.pages);
-      setCurrentStoryPage(storyData.pages[0]); // Começa com a primeira página
-      setStartTime(new Date().getTime());
-      setUserAnswers({}); // Limpa respostas anteriores
+    const fetchStoryDetails = async () => {
+      if (!storyId) {
+        setError("ID da história não fornecido na URL.");
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      setError(null);
+      setVisitedPageOrder([]); 
+      setUserAnswers({}); 
       
-      // Simulação de obtenção do nome do usuário (substituir com lógica de autenticação real)
-      // const loggedInUser = localStorage.getItem("loggedInUserName");
-      // if (loggedInUser) setUserName(loggedInUser);
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setError("Usuário não autenticado. Faça login para jogar.");
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const response = await fetch(`${API_URL}/api/stories/${storyId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ detail: `Erro HTTP ${response.status}` }));
+          throw new Error(errorData.detail || `Falha ao buscar detalhes da história: ${response.statusText}`);
+        }
+        
+        const storyDataFromApi = await response.json();
 
-    } else {
-      // Se não houver dados da história, redireciona ou mostra uma mensagem
-      alert("Nenhuma história carregada para jogar. Redirecionando...");
-      navigate('/'); // Ou para uma página de seleção de histórias
-    }
-  }, [storyData, navigate]);
+        if (storyDataFromApi && storyDataFromApi.pages && storyDataFromApi.pages.length > 0) {
+          setFetchedStoryData(storyDataFromApi);
+          setStoryPages(storyDataFromApi.pages);
+
+          let initialPage = storyDataFromApi.pages[0]; 
+          if (storyDataFromApi.start_page_client_id) {
+            const designatedStartPage = storyDataFromApi.pages.find(
+              p => p.id === storyDataFromApi.start_page_client_id
+            );
+            if (designatedStartPage) {
+              initialPage = designatedStartPage;
+            }
+          }
+          setCurrentStoryPage(initialPage);
+          if (initialPage) {
+            setVisitedPageOrder([initialPage.title]); 
+          }
+          
+          setStartTime(new Date().getTime());
+          
+          const storedUser = localStorage.getItem("currentUser");
+          if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser && parsedUser.name) {
+              setUserName(parsedUser.name);
+            }
+          }
+        } else {
+          throw new Error("Dados da história inválidos ou nenhuma página encontrada retornada pela API.");
+        }
+      } catch (err) {
+        console.error("Erro ao buscar detalhes da história:", err);
+        setError(err.message);
+        setStoryPages([]);
+        setCurrentStoryPage(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStoryDetails();
+  }, [storyId, navigate]);
 
   const handleAnswerChange = useCallback((questionId, optionId, questionType, isCheckedForCheckbox) => {
     setUserAnswers(prevAnswers => {
       const newAnswersForQuestion = { ...prevAnswers };
       if (questionType === 'single-choice') {
         newAnswersForQuestion[questionId] = optionId;
-      } else { // multiple-choice
+      } else { 
         const currentSelections = prevAnswers[questionId] || [];
         if (isCheckedForCheckbox) {
           if (!currentSelections.includes(optionId)) {
@@ -60,47 +120,49 @@ function StoryPlayerPage() {
     const targetPage = storyPages.find(p => p.title.trim().toLowerCase() === pageTitle.trim().toLowerCase());
     if (targetPage) {
       setCurrentStoryPage(targetPage);
+      setVisitedPageOrder(prevOrder => [...prevOrder, targetPage.title]);
     } else {
       alert(`Página "${pageTitle}" não encontrada nesta história.`);
     }
   }, [storyPages]);
   
-  // Renderer customizado para links
   const renderer = new marked.Renderer();
-  renderer.link = (href, title, text) => {
-    // Links internos [[Page Title]] devem ter sido processados para <a class="internal-link">...</a>
-    // Esta função é para links Markdown padrão: [texto](url)
-    if (href && !href.startsWith('#')) { // Assume links externos
-      return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-    }
-    // Para links de âncora na mesma página ou já processados internamente
-    return new marked.Renderer().link(href, title, text); // Devolve ao renderer padrão do marked
+  renderer.link = (href, title, text) => { 
+    if (href && !href.startsWith('#')) { return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`; }
+    return new marked.Renderer().link(href, title, text);
   };
 
-  const renderMarkdownForPlayer = (mdText) => {
-    if (typeof mdText !== 'string') return { __html: '' };
-    let html = '';
+  const renderMarkdownForPlayer = (mdText) => { 
+    if (typeof mdText !== 'string') return { __html: '' }; let html = '';
     try {
       html = marked.parse(mdText, { renderer, gfm: true, breaks: true });
-      
-      // Substituir os links internos [[Page Title]] no HTML gerado
       html = html.replace(/\[\[(.*?)\]\]/g, (match, pageTitle) => {
-        const titleTrimmed = pageTitle.trim();
-        if (!titleTrimmed) return match; 
-
+        const titleTrimmed = pageTitle.trim(); if (!titleTrimmed) return match; 
         const linkColor = currentStoryPage?.accentColor || DEFAULT_ACCENT_COLOR;
         const escapedTitle = titleTrimmed.replace(/"/g, '&quot;');
         return `<a href="#" class="internal-player-link" data-link-title="${escapedTitle}" style="color: ${linkColor}; text-decoration: underline; font-weight: bold;">${titleTrimmed}</a>`;
       });
-      
-    } catch (error) {
-      console.error("Erro ao parsear Markdown no player:", error);
-      html = '<p>Erro ao renderizar conteúdo.</p>';
-    }
-    return { __html: html };
+    } catch (e) { console.error(e); html="<p>Erro.</p>"; } return { __html: html };
   };
 
-  // Adiciona listener para links internos no conteúdo renderizado
+  // --- LÓGICA MEMOIZADA PARA VERIFICAR QUESTÕES RESPONDIDAS ---
+  const allCurrentPageQuestionsAnswered = useMemo(() => {
+    if (!currentStoryPage || !currentStoryPage.questions || currentStoryPage.questions.length === 0) {
+      return true; 
+    }
+    for (const question of currentStoryPage.questions) {
+      const answer = userAnswers[question.id];
+      if (answer === undefined) {
+        return false; 
+      }
+      if (question.type === 'multiple-choice' && (!Array.isArray(answer) || answer.length === 0)) {
+        return false; // Exige pelo menos uma seleção para múltipla escolha
+      }
+    }
+    return true;
+  }, [currentStoryPage, userAnswers]);
+  // --- FIM DA LÓGICA MEMOIZADA ---
+
   useEffect(() => {
     const contentArea = document.getElementById('story-page-content');
     if (contentArea) {
@@ -109,6 +171,12 @@ function StoryPlayerPage() {
         while (target && target !== contentArea) {
           if (target.classList && target.classList.contains('internal-player-link')) {
             event.preventDefault();
+            // --- VERIFICAÇÃO ADICIONADA AQUI ---
+            if (!allCurrentPageQuestionsAnswered) {
+              alert("Por favor, responda todas as questões nesta página antes de prosseguir para outra página.");
+              return; 
+            }
+            // --- FIM DA VERIFICAÇÃO ---
             const linkedPageTitle = target.dataset.linkTitle;
             if (linkedPageTitle) {
               navigateToPageByTitle(linkedPageTitle);
@@ -121,47 +189,73 @@ function StoryPlayerPage() {
       contentArea.addEventListener('click', handleClick);
       return () => contentArea.removeEventListener('click', handleClick);
     }
-  }, [navigateToPageByTitle, currentStoryPage]); // Re-anexa se a página mudar, para garantir que a cor do link esteja atualizada na função de replace
+  }, [navigateToPageByTitle, currentStoryPage, allCurrentPageQuestionsAnswered]); // Adicionada allCurrentPageQuestionsAnswered
 
-  const handleFinishStory = () => {
-    const endTime = new Date().getTime();
-    const durationMs = endTime - startTime;
-    const durationSec = durationMs / 1000;
-    const durationMin = durationSec / 60;
+  const handleFinishStory = async () => { 
+    if (!allCurrentPageQuestionsAnswered) { // Usa a variável memoizada
+      alert("Por favor, responda todas as questões nesta página antes de encerrar a história.");
+      return;
+    }
 
-    const results = {
-      userName: userName,
-      storyTitle: storyData?.story_title || "História Desconhecida", // Pega o título da história, se disponível
-      startTime: new Date(startTime).toLocaleString(),
-      endTime: new Date(endTime).toLocaleString(),
-      durationMinutes: parseFloat(durationMin.toFixed(2)),
-      answers: userAnswers, // Objeto com { questionId: answerValue }
-      pagesVisited: storyPages.map(p => p.title) // Exemplo, pode ser mais detalhado
+    const storyEndTime = new Date(); 
+    const storyStartTime = new Date(startTime);
+    const durationMs = storyEndTime.getTime() - storyStartTime.getTime();
+    const durationMin = (durationMs / 1000) / 60;
+
+    const executionPayload = {
+      story_id: parseInt(storyId, 10),
+      start_time: storyStartTime.toISOString(),
+      end_time: storyEndTime.toISOString(),    
+      duration_minutes: parseFloat(durationMin.toFixed(2)),
+      answers: userAnswers, 
+      pages_visited: visitedPageOrder, 
+      story_title_at_play: fetchedStoryData?.title || "História Desconhecida",
+      player_name_at_play: userName,
     };
 
-    console.log("--- Resultados da Execução da História ---", results);
-    alert(`História finalizada! Tempo de execução: ${results.durationMinutes.toFixed(2)} minutos. Verifique o console para os dados.`);
+    console.log("--- Resultados da Execução da História (a serem enviados) ---", executionPayload);
     
-    // No futuro: enviar 'results' para a API do backend
-    // Ex: await fetch('/api/story-results', { method: 'POST', body: JSON.stringify(results), ... });
+    const token = localStorage.getItem('accessToken');
+    if (!token) { alert("Não autenticado."); navigate('/hub'); return; }
 
-    navigate('/'); // Volta para a página inicial após finalizar
+    try {
+        const response = await fetch(`${API_URL}/api/story-executions/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+            body: JSON.stringify(executionPayload),
+        });
+        if (response.status === 201) { 
+            const savedExecution = await response.json();
+            console.log("Resultados salvos:", savedExecution);
+            alert(`História finalizada e resultados salvos! Tempo: ${executionPayload.duration_minutes.toFixed(2)} min.`);
+        } else { 
+            const errorData = await response.json().catch(() => ({ detail: `Erro HTTP ${response.status}` }));
+            console.error("Falha ao salvar resultados:", response.status, errorData);
+            alert(`História finalizada, mas falha ao salvar resultados: ${errorData.detail || response.statusText}`);
+        }
+    } catch (err) { 
+        console.error("Erro de rede ao salvar resultados:", err);
+        alert("História finalizada, mas erro de rede ao salvar resultados.");
+    }
+    navigate('/hub');
   };
+  
+  const finishButtonDisabled = (currentStoryPage && currentStoryPage.questions && currentStoryPage.questions.length > 0) 
+                               ? !allCurrentPageQuestionsAnswered 
+                               : false;
 
-  if (!currentStoryPage) {
-    return <div className="story-player-loading">Carregando história...</div>;
-  }
+  const pageSpecificStyles = { '--current-page-accent-color': currentStoryPage?.accentColor || DEFAULT_ACCENT_COLOR, }; // Adicionado ? para currentStoryPage
 
-  // Estilos inline para a cor de destaque da página atual
-  const pageSpecificStyles = {
-    '--current-page-accent-color': currentStoryPage.accentColor || DEFAULT_ACCENT_COLOR,
-  };
+  // JSX de carregamento, erro...
+  if (isLoading) { return <div className="story-player-loading">Carregando história...</div>; }
+  if (error) { return <div className="story-player-error">Erro ao carregar história: {error} <Link to="/hub" className="dashboard-link-back button-like">Voltar ao Hub</Link></div>; }
+  if (!currentStoryPage || !fetchedStoryData) { return <div className="story-player-loading">História não encontrada ou dados incompletos. <Link to="/hub" className="dashboard-link-back button-like">Voltar ao Hub</Link></div>;}
 
   return (
     <div className="story-player-container" style={pageSpecificStyles}>
       <div className="story-player-header">
         <h1>{currentStoryPage.title}</h1>
-        <p>História: {storyData?.story_title || "Título da História"}</p>
+        <p>História: {fetchedStoryData?.title || "Carregando título..."}</p>
       </div>
 
       <div id="story-page-content" className="story-player-content"
@@ -176,24 +270,13 @@ function StoryPlayerPage() {
               <ul className="story-options-list">
                 {q.options.map(opt => {
                   let isChecked = false;
-                  if (q.type === 'single-choice') {
-                    isChecked = userAnswers[q.id] === opt.id;
-                  } else { // multiple-choice
-                    isChecked = (userAnswers[q.id] || []).includes(opt.id);
-                  }
+                  if (q.type === 'single-choice') { isChecked = userAnswers[q.id] === opt.id; } 
+                  else { isChecked = (userAnswers[q.id] || []).includes(opt.id); }
                   return (
                     <li key={opt.id}>
-                      <input 
-                        type={q.type === 'single-choice' ? 'radio' : 'checkbox'}
-                        name={`question_${q.id}`} // Garante que radios de uma mesma questão sejam mutuamente exclusivos
-                        id={`option_${opt.id}`} 
-                        value={opt.id}
-                        checked={isChecked}
-                        onChange={(e) => handleAnswerChange(q.id, opt.id, q.type, e.target.checked)} 
-                      />
-                      <label htmlFor={`option_${opt.id}`}>{opt.text}</label>
-                    </li>
-                  );
+                      <input type={q.type === 'single-choice' ? 'radio' : 'checkbox'} name={`question_${q.id}`} id={`option_${q.id}_${opt.id}`} value={opt.id} checked={isChecked} onChange={(e) => handleAnswerChange(q.id, opt.id, q.type, e.target.checked)} />
+                      <label htmlFor={`option_${q.id}_${opt.id}`}>{opt.text}</label>
+                    </li>);
                 })}
               </ul>
             </div>
@@ -202,13 +285,12 @@ function StoryPlayerPage() {
       )}
 
       <div className="story-player-navigation">
-        {/* Aqui você pode adicionar botões de "Página Anterior/Próxima Página" se a navegação for linear */}
-        <button onClick={handleFinishStory} className="story-finish-button">
+        <button onClick={handleFinishStory} className="story-finish-button" disabled={finishButtonDisabled} title={finishButtonDisabled ? "Responda todas as questões da página para encerrar" : "Encerrar a história"}>
           Encerrar História
         </button>
       </div>
       <div className="story-player-footer">
-        <Link to="/">Voltar para Início</Link>
+        <Link to="/hub">Voltar para o Hub</Link>
       </div>
     </div>
   );

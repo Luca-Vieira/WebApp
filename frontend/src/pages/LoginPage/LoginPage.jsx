@@ -1,33 +1,31 @@
 // frontend/src/pages/LoginPage/LoginPage.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Adicionado useLocation
-import { useAuth } from '../../context/AuthContext'; // <-- IMPORTAR useAuth
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // useLocation e useNavigate podem ser removidos se não usados diretamente aqui.
+import { useAuth } from '../../context/AuthContext';
 import './LoginPage.css';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth(); // <-- USAR o hook useAuth
-  const navigate = useNavigate();
-  const location = useLocation(); // Para redirecionar após login
+  const { login } = useAuth(); // Obtém a função login do AuthContext
+  
+  // useNavigate e useLocation são mantidos por enquanto, mas a navegação principal
+  // após o login agora é tratada pelo AuthContext.
+  // const navigate = useNavigate(); 
+  // const location = useLocation();
 
-  const handleSubmit = async (event) => { // Tornada async se o login real for assíncrono
+  const handleSubmit = async (event) => {
     event.preventDefault();
     
-    // Lógica de autenticação (simulada por enquanto)
-    console.log('Dados de Login para simulação:', { email, password });
+    // Chama a função login do AuthContext com os dados do formulário.
+    // A função login no AuthContext agora é assíncrona e lida com a chamada à API.
+    await login({ email, password });
 
-    // Simulação de dados do usuário que viriam da API
-    const fakeUserData = { email: email, name: email.split('@')[0] }; // Exemplo
-    
-    // Chama a função de login do AuthContext
-    login(fakeUserData); // Passa dados para simulação
-
-    // A navegação para '/hub' já é feita dentro da função login() do AuthContext.
-    // Se você quiser redirecionar para a página que o usuário tentou acessar antes:
-    // const from = location.state?.from?.pathname || "/hub";
+    // A navegação para '/hub' ou outra rota protegida é feita
+    // dentro da função login do AuthContext após o sucesso da autenticação.
+    // Não é mais necessário navegar daqui.
+    // Ex: const from = location.state?.from?.pathname || "/hub";
     // navigate(from, { replace: true });
-    // Mas por simplicidade, o login() do AuthContext já redireciona para /hub.
   };
 
   return (

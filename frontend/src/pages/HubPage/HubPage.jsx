@@ -1,46 +1,131 @@
-import React, { useState } from 'react';
+// frontend/src/pages/HubPage/HubPage.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './HubPage.css'; // Estilos para esta página
+import './HubPage.css';
+
+const API_URL = 'http://127.0.0.1:8000'; // URL do nosso backend FastAPI
 
 function HubPage() {
   const navigate = useNavigate();
   const [storyIdInput, setStoryIdInput] = useState('');
+  
+  const [userStories, setUserStories] = useState([]);
+  const [isLoadingStories, setIsLoadingStories] = useState(true);
+  const [storiesError, setStoriesError] = useState(null);
 
-  const handleCreateStory = () => {
-    navigate('/editor'); // Navega para a página de criação/edição
+  // Função para buscar as histórias do usuário (movida para fora para ser reutilizável)
+  const fetchUserStories = async () => {
+    setIsLoadingStories(true);
+    setStoriesError(null);
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      setIsLoadingStories(false);
+      // setStoriesError("Usuário não autenticado para buscar histórias."); // O ProtectedRoute deve lidar com isso
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/stories`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: `Erro ${response.status}` }));
+        throw new Error(errorData.detail || `Falha ao buscar histórias: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      // console.log("Histórias recebidas do backend no HubPage:", JSON.stringify(data, null, 2));
+      setUserStories(data);
+    } catch (error) {
+      console.error("Erro ao buscar histórias do usuário:", error);
+      setStoriesError(error.message);
+      setUserStories([]);
+    } finally {
+      setIsLoadingStories(false);
+    }
   };
 
-  const handleExecuteStory = (e) => {
-    e.preventDefault(); // Previne o comportamento padrão do formulário, se houver
+  useEffect(() => {
+    fetchUserStories();
+  }, []); // O array vazio [] faz com que o efeito rode uma vez quando o componente monta
+
+  const handleCreateStory = () => {
+    navigate('/editor');
+  };
+
+  const handleExecuteStoryById = (e) => {
+    e.preventDefault();
     if (!storyIdInput.trim()) {
       alert('Por favor, insira um ID de história para executar.');
       return;
     }
-    
-    // NO FUTURO:
-    // 1. Você faria uma chamada à API: GET /api/stories/${storyIdInput} para buscar os dados da história.
-    // 2. Se a história for encontrada, receberia os dados (ex: storyData.pages).
-    // 3. Então, navegaria para a StoryPlayerPage com esses dados:
-    //    navigate('/story/play', { state: { storyData: { story_title: "Título da API", pages: dadosDaApi.pages } } });
-
-    // POR AGORA (SIMULAÇÃO ou funcionalidade limitada):
-    // Poderíamos tentar navegar e a StoryPlayerPage usaria dados mockados se não encontrar nada,
-    // ou você pode desabilitar este botão até o backend estar pronto.
-    // Para este exemplo, vamos apenas mostrar um alerta e não navegar,
-    // indicando que a funcionalidade está pendente.
-    alert(`Funcionalidade "Executar História por ID" (${storyIdInput}) pendente de implementação completa com o backend.\nPor enquanto, você pode testar o player indo diretamente ao MainPage e clicando em "Jogar História Atual".`);
-    
-    // Ou, se quiser tentar passar o ID para StoryPlayerPage (que usaria mock data se não receber state.storyData):
-    // navigate('/story/play', { state: { storyIdToLoad: storyIdInput } }); 
-    // A StoryPlayerPage precisaria ser adaptada para tentar buscar dados com este ID.
-    setStoryIdInput(''); 
+    // No futuro, isso navegaria para o player com o ID da história do banco
+    navigate(`/story/play/${storyIdInput.trim()}`);
+    setStoryIdInput('');
   };
+
+    const handleEditStory = (storyId, storyTitle) => {
+    console.log(`Redirecionando para Editar História: ID=${storyId}, Título=${storyTitle}`);
+    // Usa o navigate para ir para a rota do editor, passando o storyId via state
+    navigate('/editor', { state: { storyToLoadId: storyId } });
+  };
+
+  const handlePlayStory = (storyId, storyTitle) => {
+    console.log(`Redirecionando para Jogar História: ID=${storyId}, Título=${storyTitle}`);
+    navigate(`/story/play/${storyId}`); 
+  };
+
+  // --- NOVA FUNÇÃO PARA APAGAR HISTÓRIA ---
+  const handleDeleteStory = async (storyId, storyTitle) => {
+    if (!window.confirm(`Tem certeza que deseja apagar a história "${storyTitle}" (ID: ${storyId})? Esta ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert("Autenticação necessária para apagar histórias.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/stories/${storyId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 204) { // 204 No Content - Sucesso
+        alert(`História "${storyTitle}" apagada com sucesso.`);
+        // Atualiza a lista de histórias no frontend removendo a história apagada
+        setUserStories(prevStories => prevStories.filter(story => story.id !== storyId));
+      } else if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: `Erro HTTP ${response.status}` }));
+        throw new Error(errorData.detail || `Falha ao apagar história: ${response.statusText}`);
+      } else {
+        // Se o status for ok, mas não 204 (ex: 200 com corpo, embora não esperado aqui)
+        alert(`História "${storyTitle}" apagada.`);
+        setUserStories(prevStories => prevStories.filter(story => story.id !== storyId));
+      }
+    } catch (error) {
+      console.error("Erro ao apagar história:", error);
+      alert(`Erro ao apagar história: ${error.message}`);
+    }
+  };
+  // --- FIM DA NOVA FUNÇÃO ---
+
 
   return (
     <div className="hub-page-container">
       <header className="hub-header">
         <h1>Bem-vindo ao Criador de Histórias Interativas!</h1>
-        <p>Escolha uma opção abaixo para começar:</p>
+        <p>Escolha uma opção abaixo para começar ou continue uma história existente:</p>
       </header>
 
       <div className="hub-options-grid">
@@ -53,29 +138,76 @@ function HubPage() {
         </div>
 
         <div className="hub-option-card execute-story-card">
-          <h2>Executar uma História</h2>
-          <p>Tem um ID de história? Insira-o abaixo para mergulhar em uma aventura!</p>
-          <form onSubmit={handleExecuteStory} className="execute-story-form">
+          <h2>Executar uma História por ID</h2>
+          <p>Tem um ID de história específico? Insira-o abaixo para mergulhar na aventura!</p>
+          <form onSubmit={handleExecuteStoryById} className="execute-story-form">
             <input
               type="text"
               value={storyIdInput}
               onChange={(e) => setStoryIdInput(e.target.value)}
-              placeholder="Insira o ID da História"
+              placeholder="Insira o ID da História (do DB)"
               className="hub-input"
             />
-            <button type="submit" className="hub-button secondary-button" disabled={!storyIdInput.trim()}> 
-            {/* O botão pode estar desabilitado até a funcionalidade backend existir.
-                Por enquanto, ele mostrará um alerta.
-            */}
+            <button type="submit" className="hub-button secondary-button" disabled={!storyIdInput.trim()}>
               Executar História
             </button>
           </form>
         </div>
       </div>
 
+      <section className="user-stories-section">
+        <h2>Minhas Histórias Salvas</h2>
+        {isLoadingStories && <p className="loading-message">Carregando suas histórias...</p>}
+        {storiesError && <p className="error-message">Erro ao carregar histórias: {storiesError}</p>}
+        {!isLoadingStories && !storiesError && userStories.length === 0 && (
+          <p className="no-stories-message">Você ainda não salvou nenhuma história. Que tal <Link to="/editor">criar uma agora</Link>?</p>
+        )}
+        {!isLoadingStories && !storiesError && userStories.length > 0 && (
+          <ul className="stories-list">
+            {userStories.map(story => (
+              <li key={story.id} className="story-list-item">
+                <div className="story-info">
+                  <h3>{story.title}</h3> {/* Usando story.title como corrigido */}
+                  <p>Páginas: {story.pages ? story.pages.length : 0}</p>
+                  {story.start_page_client_id && (
+                    <p className="start-page-info-hub">
+                        Página Inicial Designada ID: {story.start_page_client_id}
+                        {/* Você pode querer mostrar o título da página inicial aqui,
+                            o que exigiria encontrar a página na lista story.pages */}
+                    </p>
+                  )}
+                </div>
+                <div className="story-actions">
+                  <button 
+                    onClick={() => handleEditStory(story.id, story.title)} 
+                    className="hub-button list-action-button edit-button"
+                  >
+                    Editar
+                  </button>
+                  <button 
+                    onClick={() => handlePlayStory(story.id, story.title)} 
+                    className="hub-button list-action-button play-button"
+                  >
+                    Jogar
+                  </button>
+                  {/* --- NOVO BOTÃO APAGAR --- */}
+                  <button 
+                    onClick={() => handleDeleteStory(story.id, story.title)} 
+                    className="hub-button list-action-button delete-button"
+                  >
+                    Apagar
+                  </button>
+                  {/* --- FIM DO NOVO BOTÃO APAGAR --- */}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <footer className="hub-footer">
         <p>
-          Explore suas <Link to="/dashboard">estatísticas no Dashboard</Link> ou <Link to="/story/play">teste o Player</Link> (com dados da última edição).
+          Explore suas <Link to="/dashboard">estatísticas no Dashboard</Link> ou <Link to="/editor">vá para o Editor</Link>.
         </p>
       </footer>
     </div>

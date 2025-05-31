@@ -1,10 +1,11 @@
+// frontend/src/App.jsx
 import React from 'react';
-import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext'; // <-- IMPORTAR AuthProvider e useAuth
-import ProtectedRoute from './components/ProtectedRoute';      // <-- IMPORTAR ProtectedRoute
+import { Routes, Route, Link, Navigate } from 'react-router-dom'; // Removido useNavigate se não for usado diretamente aqui
+import { AuthProvider, useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import HubPage from './pages/HubPage/HubPage';
-import MainPage from './pages/MainPage/MainPage'; // Seu editor
+import MainPage from './pages/MainPage/MainPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
 import StoryPlayerPage from './pages/StoryPlayerPage/StoryPlayerPage';
@@ -13,8 +14,7 @@ import './App.css';
 
 // Componente de Navegação que pode mostrar/esconder links baseados na autenticação
 function AppNavigation() {
-  const { isAuthenticated, logout } = useAuth();
-  // const navigate = useNavigate(); // Se precisar para o logout, mas o hook useAuth já faz
+  const { isAuthenticated, logout, currentUser } = useAuth(); // Adicionado currentUser se quiser exibir o nome/email
 
   return (
     <nav className="app-nav">
@@ -24,6 +24,11 @@ function AppNavigation() {
             <li><Link to="/hub">HUB Principal</Link></li>
             <li><Link to="/editor">Criar/Editar História</Link></li>
             <li><Link to="/dashboard">Meu Dashboard</Link></li>
+            {/* Opcional: Exibir nome do usuário
+            {currentUser && currentUser.name && (
+              <li className="nav-user-greeting">Olá, {currentUser.name}!</li>
+            )}
+            */}
             <li><button onClick={logout} className="nav-logout-button">Logout</button></li>
           </>
         ) : (
@@ -65,7 +70,7 @@ function AppRoutes() {
           } 
         />
         <Route 
-          path="/story/play" // No futuro: /story/play/:storyId
+          path="/story/play/:storyId"  // <--- ROTA MODIFICADA AQUI
           element={
             <ProtectedRoute>
               <StoryPlayerPage />
@@ -93,7 +98,7 @@ function AppRoutes() {
         <Route 
           path="*" 
           element={
-            <div>
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
               <h2>404 - Página Não Encontrada</h2>
               <p><Link to={isAuthenticated ? "/hub" : "/login"}>Voltar para a página inicial</Link></p>
             </div>
@@ -106,12 +111,9 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider> {/* Envolve toda a lógica de rotas com o AuthProvider */}
-      {/* Você pode ter um container div aqui se precisar para o App.css global */}
-      {/* <div className="app-router-container"> */} 
-        <AppNavigation /> {/* Componente de navegação separado */}
-        <AppRoutes />     {/* Componente que contém as rotas */}
-      {/* </div> */}
+    <AuthProvider>
+      <AppNavigation />
+      <AppRoutes />
     </AuthProvider>
   );
 }

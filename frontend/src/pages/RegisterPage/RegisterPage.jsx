@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './RegisterPage.css';
-// Importe os estilos globais do formulário de App.css se eles estiverem lá
-// ou adicione classes de .form-container, .form-group, etc. aqui ou no RegisterPage.css
+
+const API_URL = 'http://127.0.0.1:8000'; // URL do nosso backend FastAPI
 
 function RegisterPage() {
   const [name, setName] = useState('');
@@ -12,21 +12,44 @@ function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
       alert('As senhas não coincidem!');
       return;
     }
-    // Lógica de cadastro (simulada por enquanto)
-    console.log('Dados de Cadastro:', { name, email, password });
-    alert('Cadastro (simulado) com sucesso! Verifique o console.');
-    // No futuro, após cadastro real:
-    // navigate('/login'); // Redireciona para a página de login
+
+    try {
+      const response = await fetch(`${API_URL}/api/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (response.status === 201) { // 201 Created
+        const data = await response.json();
+        alert(`Usuário ${data.name || name} registrado com sucesso! Faça o login para continuar.`);
+        navigate('/login');
+      } else {
+        const errorData = await response.json().catch(() => ({ detail: "Erro desconhecido no registro." }));
+        console.error('Falha no registro:', response.status, errorData);
+        alert(`Falha no registro: ${errorData.detail || response.statusText}`);
+      }
+
+    } catch (error) {
+      console.error('Erro na requisição de registro:', error);
+      alert('Ocorreu um erro ao tentar registrar. Verifique o console para mais detalhes.');
+    }
   };
 
   return (
-    <div className="register-page-container form-container"> {/* Usando classes de App.css */}
+    <div className="register-page-container form-container">
       <h2>Criar Conta</h2>
       <form onSubmit={handleSubmit} className="register-form">
         <div className="form-group">

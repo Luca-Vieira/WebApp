@@ -149,3 +149,58 @@
   color: var(--text-on-primary-color, white);
   text-decoration: none;
 }
+
+/* frontend/src/pages/DashboardPage/CreatorDashboardPage.css */
+/* ... (seus estilos existentes) ... */
+
+.responses-section ul {
+  padding-left: 20px; /* Para indentar um pouco as respostas */
+}
+.responses-section li p em { /* Estilo para "Questão ID:" */
+  font-weight: 500;
+  color: var(--label-color, #555);
+}
+.no-answers-text {
+    color: var(--text-color-light, #6c757d);
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+.pages-visited-section {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #eee; /* Separador leve */
+}
+.pages-visited-section strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+  color: var(--label-color, #555);
+}
+.pages-visited-section p {
+  font-size: 0.9rem;
+  color: var(--text-color-secundario, #495057);
+  margin: 0;
+}
+
+/* frontend/src/pages/DashboardPage/CreatorDashboardPage.css */
+/* ... (seus estilos existentes) ... */
+
+.dashboard-filter-container {
+  margin-bottom: 2rem;
+  text-align: center; /* Ou left, conforme preferir */
+}
+
+.dashboard-filter-container label {
+  margin-right: 0.5rem;
+  font-weight: 500;
+  color: var(--label-color);
+}
+
+.dashboard-filter-container select {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--input-border-color);
+  min-width: 200px; /* Para dar um tamanho razoável ao select */
+  background-color: var(--container-background-color);
+}
